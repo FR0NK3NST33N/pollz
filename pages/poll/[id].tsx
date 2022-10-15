@@ -53,6 +53,7 @@ const Poll: NextPage = () => {
     });
     const channel = pusher.subscribe("pollz");
     channel.bind("message", (data) => {
+      console.log("pusher: ", data);
       setPoll(data.message);
     });
   }, []);
