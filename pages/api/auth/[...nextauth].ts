@@ -9,6 +9,22 @@ export default NextAuth({
   jwt: {
     secret: process.env.JWT_SECRET,
   },
+  callbacks: {
+    session: async ({ session, token }) => {
+      if (session?.user) {
+        session.user.id = token.sub;
+      }
+      return session;
+    },
+    jwt: async ({ user, token }) => {
+      console.log(token);
+      console.log(user);
+      if (user) {
+        token.uid = user.id;
+      }
+      return token;
+    },
+  },
   providers: [
     GithubProvider({
       clientId: process.env.GITHUB_ID as string,
