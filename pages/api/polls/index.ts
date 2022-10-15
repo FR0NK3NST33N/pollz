@@ -9,7 +9,8 @@ const handler = nc<Request, NextApiResponse>({
 });
 
 handler.use(middleware);
-handler.post(async (req, res) => {
+
+handler.post(async (req: any, res: any) => {
   console.log(req.user);
   const newPoll = await createPoll(
     req.user.uid,
@@ -19,7 +20,7 @@ handler.post(async (req, res) => {
   res.send({ data: newPoll });
 });
 
-handler.get(async (req, res) => {
+handler.get(async (req: any, res: any) => {
   const polls = await getMyPolls(req.user.uid);
   res.send({ data: polls });
 });

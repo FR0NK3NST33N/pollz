@@ -23,7 +23,6 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { AppNav } from "../../components";
 import PollFormDialog from "../../components/PollFormDialog";
-import { createPoll } from "../../lib";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import Link from "next/link";
@@ -33,7 +32,7 @@ const Dashboard = () => {
   const { data: session, status } = useSession();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [polls, setPolls] = useState([]);
+  const [polls, setPolls] = useState<any[]>([]);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -67,9 +66,6 @@ const Dashboard = () => {
           "Content-Type": "application/json",
         },
       });
-
-      const { data } = await res.json();
-      //setPolls([...polls, data.data])
     } catch (e) {}
   };
 

@@ -23,7 +23,7 @@ import Pusher from "pusher-js";
 const Poll: NextPage = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [poll, setPoll] = useState(undefined);
+  const [poll, setPoll] = useState<any>(undefined);
   const [vote, setVote] = useState("");
   const [voted, setVoted] = useState(false);
   const [localVotes, setLocalVotes] = useState<string[] | undefined>(undefined);
@@ -39,7 +39,8 @@ const Poll: NextPage = () => {
 
   useEffect(() => {
     if (poll) {
-      const local = JSON.parse(localStorage.getItem("completedPolls")) ?? [];
+      const completedPolls = localStorage.getItem("completedPolls");
+      const local = completedPolls ? JSON.parse(completedPolls) : [];
       setLocalVotes(local);
       const localCheck = local.findIndex((v) => v === poll?.id);
       if (localCheck >= 0) setVoted(true);

@@ -1,27 +1,21 @@
-import { NextApiResponse } from "next";
+import { NextApiRequest, NextApiResponse } from "next";
 import nc from "next-connect";
 import onError from "../../../middleware/error";
 import middleware from "../../../middleware/all";
-import {
-  createPoll,
-  createVote,
-  getMyPolls,
-  getPoll,
-  updateOptionVoteCount,
-} from "../../../lib";
+import { createPoll, createVote, getMyPolls, getPoll } from "../../../lib";
 import Pusher from "pusher";
 
 const handler = nc<Request, NextApiResponse>({
   onError,
 });
 
-handler.get(async (req, res) => {
+handler.get(async (req: any, res: any) => {
   console.log(req.query);
   const poll = await getPoll(req.query.id as string);
   res.send({ data: poll });
 });
 
-handler.post(async (req, res) => {
+handler.post(async (req: any, res: any) => {
   const pusher = new Pusher({
     appId: process.env.PUSHER_APP as string,
     key: process.env.PUSHER_KEY as string,
