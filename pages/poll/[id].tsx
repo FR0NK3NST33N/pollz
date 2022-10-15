@@ -56,6 +56,9 @@ const Poll: NextPage = () => {
       console.log("pusher: ", data);
       setPoll(data.message);
     });
+    return () => {
+      pusher.unsubscribe("pollz");
+    };
   }, []);
 
   useEffect(() => {
