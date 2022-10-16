@@ -108,6 +108,7 @@ const Poll: NextPage = () => {
       let _poll = { ...poll };
       let index = _poll.options.findIndex((o) => o.id === vote);
       _poll.options[index].voteCount += 1;
+      //@ts-ignore
       channel.publish({ name: "vote", data: _poll }); // .publish({ name: "vote", data: _poll });
       setVoted(true);
       if (localVotes) {
