@@ -19,6 +19,11 @@ import Head from "next/head";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import { AppNav } from "../../components";
 import Pusher from "pusher-js";
+import dynamic from "next/dynamic";
+import { useAblyChannel } from "../../hooks/useAblyChannel";
+const Results = dynamic(() => import("../../components/Results"), {
+  ssr: false,
+});
 
 const Poll: NextPage = () => {
   const { data: session, status } = useSession();
@@ -28,6 +33,10 @@ const Poll: NextPage = () => {
   const [voted, setVoted] = useState(false);
   const [localVotes, setLocalVotes] = useState<string[] | undefined>(undefined);
   const [loading, setLoading] = useState(true);
+  const [channel, ably] = useAblyChannel("vote", (message) => {
+    console.log("ably: ", message);
+    setPoll(message.data);
+  });
 
   const totalVotes = useMemo(() => {
     if (poll)
@@ -96,6 +105,10 @@ const Poll: NextPage = () => {
           },
         }
       );
+      let _poll = { ...poll };
+      let index = _poll.options.findIndex((o) => o.id === vote);
+      _poll.options[index].voteCount += 1;
+      channel.publish({ name: "vote", data: _poll }); // .publish({ name: "vote", data: _poll });
       setVoted(true);
       if (localVotes) {
         localStorage.setItem(
@@ -154,39 +167,7 @@ const Poll: NextPage = () => {
                       ))}
                   </RadioGroup>
                 )}
-                {voted && (
-                  <>
-                    <List sx={{ pb: 4 }}>
-                      {poll.options.map((o) => (
-                        <ListItem key={o.id}>
-                          <Paper
-                            elevation={3}
-                            sx={{
-                              display: "flex",
-                              color: "custom.text",
-                              backgroundColor: "custom.backgroundAlt",
-                              width: "100%",
-                              p: 4,
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Typography>{o.name}</Typography>
-                            <Typography>
-                              {o.voteCount
-                                ? `${((o.voteCount / totalVotes) * 100).toFixed(
-                                    1
-                                  )}%`
-                                : `${0}%`}
-                            </Typography>
-                          </Paper>
-                        </ListItem>
-                      ))}
-                    </List>
-                    <Typography sx={{ mb: 4 }}>
-                      Total Votes: {totalVotes}
-                    </Typography>
-                  </>
-                )}
+                {voted && <Results poll={poll} totalVotes={totalVotes} />}
                 <Box display="flex" justifyContent="space-between">
                   <Button
                     disabled={!vote || voted}
