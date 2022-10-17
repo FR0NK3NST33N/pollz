@@ -5,8 +5,8 @@ export const CenteredPage = styled(Box)(({ theme }: { theme: Theme }) => ({
   flexDirection: "row",
   minWidth: "100vw",
   minHeight: "calc(100vh - 68px)",
-  marginTop: "48px",
+  marginTop: "0px",
   justifyContent: "center",
   alignItems: "center",
-  gap: "48px",
+  //gap: "48px",
 }));
