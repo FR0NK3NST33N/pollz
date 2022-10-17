@@ -1,9 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/router";
 import { createPoll, deletePoll, fetchMyPolls } from "../lib";
 
-export const useMyPolls = (sessionStatus) => {
-  const router = useRouter();
+export const useMyPolls = () => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [polls, setPolls] = useState<any[]>([]);
@@ -13,12 +11,6 @@ export const useMyPolls = (sessionStatus) => {
     setPolls(data);
     setLoading(false);
   };
-
-  useEffect(() => {
-    if (sessionStatus === "unauthenticated") {
-      router.push("/");
-    }
-  }, [sessionStatus, router]);
 
   useEffect(() => {
     getMyPolls();

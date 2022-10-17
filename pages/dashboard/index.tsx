@@ -1,6 +1,8 @@
+import { useEffect } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import {
   Badge,
@@ -27,9 +29,16 @@ import { AppNav, PollFormDialog } from "../../components";
 import { useMyPolls } from "../../hooks/useMyPolls";
 
 const Dashboard = () => {
-  const { data: session } = useSession();
+  const router = useRouter();
+  const { data: session, status } = useSession();
   const { handleDelete, handleSave, loading, open, polls, setOpen } =
-    useMyPolls(session);
+    useMyPolls();
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/");
+    }
+  }, [status, router]);
 
   return (
     <div>

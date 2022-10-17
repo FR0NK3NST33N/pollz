@@ -39,7 +39,7 @@ const Poll: NextPage = () => {
         <CenteredPage>
           <Paper
             sx={{
-              minWidth: "450px",
+              minWidth: "40vw",
               maxWidth: "90vw",
               padding: "15px",
               backgroundColor: "custom.backgroundAlt",
