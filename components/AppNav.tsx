@@ -1,30 +1,17 @@
-import { ThemeContext } from "@emotion/react";
 import {
-  AppBar as MuiAppBar,
+  AppBar,
   Avatar,
   IconButton,
   Menu,
   MenuItem,
-  MenuList as MuiMenuList,
-  styled,
-  Theme,
-  Toolbar as MuiToolBar,
+  MenuList,
+  Toolbar,
   Typography,
 } from "@mui/material";
-import { useTheme } from "@mui/system";
-import { useContext, useState } from "react";
-import { AppBar, NavButton, Toolbar } from ".";
+import { useState } from "react";
 import Link from "next/link";
 import { Session } from "next-auth";
 import { signOut } from "next-auth/react";
-
-const MenuList = styled(MuiMenuList)(({ theme }: { theme: Theme }) => ({
-  backgroundColor: theme.palette.custom.background,
-  color: theme.palette.custom.text,
-  padding: "0 !important",
-  border: `1px solid ${theme.palette.custom.text}`,
-  borderRadius: "4px",
-}));
 
 export interface AppNavProps {
   session: Session | null;
@@ -44,8 +31,18 @@ export const AppNav = ({ session }: AppNavProps) => {
     signOut({ redirect: false });
   };
   return (
-    <AppBar>
-      <Toolbar>
+    <AppBar sx={{ backgroundColor: "custom.background" }}>
+      <Toolbar
+        sx={{
+          backgroundColor: "custom.background",
+          borderBottomWidth: "1px",
+          borderBottomStyle: "solid",
+          borderBottomColor: "custom.texu",
+          marginLeft: "15px",
+          marginRight: "15px",
+          justifyContent: "space-between",
+        }}
+      >
         <Link href="/dashboard">
           <Typography variant="h4" component="div">
             Pollz
@@ -94,7 +91,15 @@ export const AppNav = ({ session }: AppNavProps) => {
             },
           }}
         >
-          <MenuList>
+          <MenuList
+            sx={{
+              backgroundColor: "custom.background",
+              color: "custom.text",
+              padding: "0 !important",
+              border: `1px solid custom.text`,
+              borderRadius: "4px",
+            }}
+          >
             <MenuItem onClick={handleLogout}>Logout</MenuItem>
           </MenuList>
         </Menu>

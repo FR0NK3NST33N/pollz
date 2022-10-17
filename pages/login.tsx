@@ -12,8 +12,6 @@ const Login: NextPage = () => {
   const router = useRouter();
 
   useEffect(() => {
-    console.log("session: ", session);
-    console.log("status: ", status);
     if (session) {
       router.push("/dashboard");
     }

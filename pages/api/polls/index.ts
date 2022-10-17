@@ -2,7 +2,7 @@ import { NextApiResponse } from "next";
 import nc from "next-connect";
 import onError from "../../../middleware/error";
 import middleware from "../../../middleware/all";
-import { createPoll, getMyPolls } from "../../../lib";
+import { createPoll, getMyPolls } from "../../../db";
 
 const handler = nc<Request, NextApiResponse>({
   onError,
@@ -11,7 +11,6 @@ const handler = nc<Request, NextApiResponse>({
 handler.use(middleware);
 
 handler.post(async (req: any, res: any) => {
-  console.log(req.user);
   const newPoll = await createPoll(
     req.user.uid,
     req.body.question,

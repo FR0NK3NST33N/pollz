@@ -1,4 +1,4 @@
-import { List, ListItem, Paper, Typography } from "@mui/material";
+import { Box, List, ListItem, Paper, Typography } from "@mui/material";
 
 export const Results = ({
   totalVotes,
@@ -33,7 +33,10 @@ export const Results = ({
           </ListItem>
         ))}
       </List>
-      <Typography sx={{ mb: 4 }}>Total Votes: {totalVotes}</Typography>
+      <Box display="flex" justifyContent="space-between">
+        <Typography sx={{ mb: 4 }}>Total Votes: {totalVotes}</Typography>
+        <Typography sx={{ mb: 4 }}>Thank you!</Typography>
+      </Box>
     </>
   );
 };

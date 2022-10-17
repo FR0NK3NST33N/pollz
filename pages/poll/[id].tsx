@@ -1,126 +1,29 @@
-import { useEffect, useMemo, useState } from "react";
-import { signIn, useSession } from "next-auth/react";
-import { useRouter } from "next/router";
-import {
-  Box,
-  Button,
-  CircularProgress,
-  FormControlLabel,
-  List,
-  ListItem,
-  Paper,
-  Radio,
-  RadioGroup,
-  Typography,
-} from "@mui/material";
+import { useSession } from "next-auth/react";
+import { Box, CircularProgress, Paper, Typography } from "@mui/material";
 import { NextPage } from "next";
-import { CenteredPage, SiteNav } from "../../components";
+import { CenteredPage, SiteNav, PollOptions, AppNav } from "../../components";
 import Head from "next/head";
-import GitHubIcon from "@mui/icons-material/GitHub";
-import { AppNav } from "../../components";
-import Pusher from "pusher-js";
 import dynamic from "next/dynamic";
-import { useAblyChannel } from "../../hooks/useAblyChannel";
-const Results = dynamic(() => import("../../components/Results"), {
+import { useAbly, usePoll, useVote } from "../../hooks";
+const PollResults = dynamic(() => import("../../components/PollResults"), {
   ssr: false,
 });
 
 const Poll: NextPage = () => {
-  const { data: session, status } = useSession();
-  const router = useRouter();
-  const [poll, setPoll] = useState<any>(undefined);
-  const [vote, setVote] = useState("");
-  const [voted, setVoted] = useState(false);
-  const [localVotes, setLocalVotes] = useState<string[] | undefined>(undefined);
-  const [loading, setLoading] = useState(true);
-  const [channel, ably] = useAblyChannel("vote", (message) => {
-    console.log("ably: ", message);
+  const [channel] = useAbly("vote", (message) => {
+    console.log("ably message: ", message);
     setPoll(message.data);
   });
-
-  const totalVotes = useMemo(() => {
-    if (poll)
-      return poll.options.reduce(
-        (previousValue, currentValue) => previousValue + currentValue.voteCount,
-        0
-      );
-  }, [poll?.options.map((o) => o.voteCount).toString()]);
-
-  useEffect(() => {
-    if (poll) {
-      const completedPolls = localStorage.getItem("completedPolls");
-      const local = completedPolls ? JSON.parse(completedPolls) : [];
-      setLocalVotes(local);
-      const localCheck = local.findIndex((v) => v === poll?.id);
-      if (localCheck >= 0) setVoted(true);
-    }
-  }, [poll?.id]);
-
-  useEffect(() => {
-    const pusher = new Pusher("bfd212b69f0605c90aef", {
-      cluster: "us2",
-    });
-    const channel = pusher.subscribe("pollz");
-    channel.bind("message", (data) => {
-      console.log("pusher: ", data);
-      setPoll(data.message);
-    });
-    return () => {
-      pusher.unsubscribe("pollz");
-    };
-  }, []);
-
-  useEffect(() => {
-    const fetchPoll = async () => {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_HOST}/api/polls/${router.query.id}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      const { data } = await res.json();
-      setPoll(data);
-    };
-    if (router.query.id) fetchPoll();
-    setLoading(false);
-  }, [router, poll?.id]);
-
-  const handleChange = (e) => {
-    setVote(e.target.value);
-  };
-
-  const handleVote = async () => {
-    try {
-      await fetch(
-        `${process.env.NEXT_PUBLIC_API_HOST}/api/polls/${router.query.id}`,
-        {
-          method: "POST",
-          body: JSON.stringify({ vote: vote }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      let _poll = { ...poll };
-      let index = _poll.options.findIndex((o) => o.id === vote);
-      _poll.options[index].voteCount += 1;
-      //@ts-ignore
-      channel.publish({ name: "vote", data: _poll }); // .publish({ name: "vote", data: _poll });
-      setVoted(true);
-      if (localVotes) {
-        localStorage.setItem(
-          "completedPolls",
-          JSON.stringify([...localVotes, poll?.id])
-        );
-      } else {
-        localStorage.setItem("completedPolls", JSON.stringify([poll?.id]));
-      }
-    } catch (e) {}
-  };
+  const { data: session, status } = useSession();
+  const { loading, poll, setPoll, totalVotes } = usePoll();
+  const {
+    handleVote,
+    handleVoteChange,
+    loading: voteLoading,
+    setVoted,
+    vote,
+    voted,
+  } = useVote(poll, channel);
 
   return (
     <div>
@@ -143,44 +46,34 @@ const Poll: NextPage = () => {
               color: "custom.text",
             }}
           >
-            {(status === "loading" || loading) && <CircularProgress />}
+            {(status === "loading" || loading) && (
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  m: 4,
+                }}
+              >
+                <CircularProgress />
+              </Box>
+            )}
             {status !== "loading" && !loading && (
               <>
                 <Typography variant="h5" sx={{ fontWeight: "bold", pb: 4 }}>
                   {poll?.question}
                 </Typography>
                 {!voted && (
-                  <RadioGroup
-                    aria-labelledby="demo-controlled-radio-buttons-group"
-                    name="controlled-radio-buttons-group"
-                    value={vote}
-                    onChange={handleChange}
-                    sx={{ pb: 4 }}
-                  >
-                    {poll?.options &&
-                      poll?.options.map((o) => (
-                        <FormControlLabel
-                          key={o.id}
-                          value={o.id}
-                          control={<Radio />}
-                          label={o.name}
-                        />
-                      ))}
-                  </RadioGroup>
+                  <PollOptions
+                    poll={poll}
+                    setVoted={setVoted}
+                    vote={vote}
+                    voted={voted}
+                    handleVote={handleVote}
+                    handleVoteChange={handleVoteChange}
+                  />
                 )}
-                {voted && <Results poll={poll} totalVotes={totalVotes} />}
-                <Box display="flex" justifyContent="space-between">
-                  <Button
-                    disabled={!vote || voted}
-                    variant="contained"
-                    onClick={handleVote}
-                  >
-                    Submit
-                  </Button>
-                  <Button color="secondary" disabled={voted}>
-                    See Results
-                  </Button>
-                </Box>
+                {voted && <PollResults poll={poll} totalVotes={totalVotes} />}
               </>
             )}
           </Paper>

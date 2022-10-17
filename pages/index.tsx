@@ -1,10 +1,8 @@
-import { Box, styled, Theme, Typography } from "@mui/material";
-import { fontSize } from "@mui/system";
+import { styled, Theme, Typography } from "@mui/material";
 import type { NextPage } from "next";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
-import Image from "next/image";
-import { SiteNav, Illustration, CenteredPage } from "../components";
+import { SiteNav, CenteredPage } from "../components";
 
 const GradientText = styled(Typography)(({ theme }: { theme: Theme }) => ({
   fontSize: "148px",

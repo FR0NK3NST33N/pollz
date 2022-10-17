@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import prisma from "../../../lib/db";
+import prisma from "../../../db";
 
 export default NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -17,8 +17,6 @@ export default NextAuth({
       return session;
     },
     jwt: async ({ user, token }) => {
-      console.log(token);
-      console.log(user);
       if (user) {
         token.uid = user.id;
       }

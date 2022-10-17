@@ -1,30 +1,5 @@
-import { ThemeContext } from "@emotion/react";
-import {
-  AppBar as MuiAppBar,
-  styled,
-  Theme,
-  Toolbar as MuiToolBar,
-  Typography,
-} from "@mui/material";
-import { useTheme } from "@mui/system";
-import { useContext } from "react";
-import { NavButton } from ".";
+import { AppBar, Button, Toolbar, Typography } from "@mui/material";
 import Link from "next/link";
-
-export const AppBar = styled(MuiAppBar)(({ theme }: { theme: Theme }) => ({
-  backgroundColor: theme.palette.custom.background,
-}));
-
-export const Toolbar = styled(MuiToolBar)(({ theme }: { theme: Theme }) => ({
-  backgroundColor: theme.palette.custom.background,
-  borderBottomWidth: "1px",
-  borderBottomStyle: "solid",
-  borderBottomColor: theme.palette.custom.text,
-  // minHeight: "48px",
-  marginLeft: "15px",
-  marginRight: "15px",
-  justifyContent: "space-between",
-}));
 
 export interface SiteNavProps {
   authed: boolean;
@@ -32,8 +7,18 @@ export interface SiteNavProps {
 
 export const SiteNav = ({ authed }: SiteNavProps) => {
   return (
-    <AppBar>
-      <Toolbar>
+    <AppBar sx={{ backgroundColor: "custom.background" }}>
+      <Toolbar
+        sx={{
+          backgroundColor: "custom.background",
+          borderBottomWidth: "1px",
+          borderBottomStyle: "solid",
+          borderBottomColor: "custom.texu",
+          marginLeft: "15px",
+          marginRight: "15px",
+          justifyContent: "space-between",
+        }}
+      >
         <Link href="/">
           <Typography variant="h4" component="div">
             Pollz
@@ -41,12 +26,12 @@ export const SiteNav = ({ authed }: SiteNavProps) => {
         </Link>
         {!authed && (
           <Link href="/login">
-            <NavButton variant="contained">Login</NavButton>
+            <Button variant="contained">Login</Button>
           </Link>
         )}
         {authed && (
           <Link href="/dashboard">
-            <NavButton variant="contained">Dashboard</NavButton>
+            <Button variant="contained">Dashboard</Button>
           </Link>
         )}
       </Toolbar>

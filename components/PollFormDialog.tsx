@@ -4,9 +4,8 @@ import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Divider,
   IconButton,
@@ -22,18 +21,16 @@ export interface PollFormDialogProps {
   handleSave?: (question: string, options: string[]) => Promise<void>;
 }
 
-export default function PollFormDialog({
+export const PollFormDialog = ({
   open,
   handleCancel,
   handleSave,
-}: PollFormDialogProps) {
+}: PollFormDialogProps) => {
   const [question, setQuestion] = useState("");
   const [options, setOptions] = useState(["", ""]);
 
   const handleRemoveOption = (index: number) => {
     let _options = [...options];
-    console.log(index);
-    console.log(_options);
     _options.splice(index, 1);
     setOptions(_options);
   };
@@ -78,10 +75,6 @@ export default function PollFormDialog({
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
           />
-          {/* <Divider
-            orientation="horizontal"
-            sx={{ width: "100%", backgroundColor: "custom.text", my: 2 }}
-          /> */}
           {options.map((option: string, index: number) => (
             <Paper
               key={`option-${index}`}
@@ -152,4 +145,4 @@ export default function PollFormDialog({
       </Dialog>
     </div>
   );
-}
+};
